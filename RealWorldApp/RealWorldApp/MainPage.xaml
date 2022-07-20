@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RealWorldApp.MainPage">
+
+    <StackLayout>
+        <!--<frame backgroundcolor="#2196f3" padding="24" cornerradius="0">
+            <label text="my new app!" horizontaltextalignment="center" textcolor="white" fontsize="36"/>
+        </frame>
+        <label text="start developing now" fontsize="title" padding="30,10,30,10"/>
+        <label text="make changes to your xaml file and save to see your ui update in the running app with xaml hot reload. give it a try!" fontsize="16" padding="30,0,30,0"/>
+        <label fontsize="16" padding="30,24,30,0">
+            <label.formattedtext>
+                <formattedstring>
+                    <formattedstring.spans>
+                        <span text="learn more at "/>
+                        <span text="https://aka.ms/xamarin-quickstart" fontattributes="bold"/>
+                    </formattedstring.spans>
+                </formattedstring>
+            </label.formattedtext>
+        </label>-->
+
+        <Entry Placeholder="Enter User Name"
+               x:Name="EntUserName" />
+
+        <Button Text="Save"
+                x:Name="BtnSave"
+                Clicked="BtnSave_Clicked"/>
+        <Button Text="Retrieve"
+                x:Name="BtnRetrieve"
+                Clicked="BtnRetrieve_Clicked"/>
+        <Label x:Name="LblUserName" />
+    </StackLayout>
+
+</ContentPage>
