@@ -73,9 +73,14 @@
                                    Source="{Binding PictureUrl}"/>
                             <Label TextColor="#000000" 
                                    Text="{Binding Name}"/>
-                            
+
                             <Label TextColor="#B00905" 
                                    Text="{Binding Price, StringFormat='£{0}'}"/>
+                            <Button 
+                                Text="Add To Card"
+                                Clicked="AddToCard_Button"
+                                BindingContext="{Binding Id}">
+                            </Button>
                         </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

@@ -47,6 +47,7 @@ namespace RealWorldApp.Services
             var result = JsonConvert.DeserializeObject<UserDto>(jsonResult);
             Preferences.Set("accessToken", result.Token);
             Preferences.Set("userName", result.DisplayName);
+            Preferences.Set("Email", result.Email);
             return true;
         }
 
@@ -85,17 +86,38 @@ namespace RealWorldApp.Services
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/product/getallproducts");
             return JsonConvert.DeserializeObject<List<ProductToReturnDto>>(response);
         }
-
-        public static async Task<bool> AddItemsInCart(AddToCart addToCart)
+        public static async Task<CustomerBasket> GetBasketById(string basket_id)
         {
             await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
-            var json = JsonConvert.SerializeObject(addToCart);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/basket?id=" + basket_id);
+            return JsonConvert.DeserializeObject<CustomerBasket>(response);
+        }
+        public static async Task<CustomerBasket> CreateBasket(CustomerBasket basket)
+        {
+            await TokenValidator.CheckTokenValidity();
+            var httpClient = new HttpClient();
+            var json = JsonConvert.SerializeObject(basket);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.PostAsync(AppSettings.ApiUrl + "api/ShoppingCartItems", content);
-            if (!response.IsSuccessStatusCode) return false;
-            return true;
+            var response = await httpClient.PostAsync(AppSettings.ApiUrlProd + "api/basket", content);
+            var resp = await response.Content.ReadAsStringAsync();
+            CustomerBasket basket_response = JsonConvert.DeserializeObject<CustomerBasket>(resp);
+            return basket_response;
+        }
+
+        public static async Task<CustomerBasket> AddItemToBasket(CustomerBasket basket)
+        {
+            await TokenValidator.CheckTokenValidity();
+            var httpClient = new HttpClient();
+            var json = JsonConvert.SerializeObject(basket);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
+            var response = await httpClient.PutAsync(AppSettings.ApiUrlProd + "api/basket", content);
+            var resp = await response.Content.ReadAsStringAsync();
+            CustomerBasket basket_response = JsonConvert.DeserializeObject<CustomerBasket>(resp);
+            return basket_response;
         }
 
         public static async Task<CartSubTotal> GetCartSubTotal(int userId)
@@ -107,13 +129,13 @@ namespace RealWorldApp.Services
             return JsonConvert.DeserializeObject<CartSubTotal>(response);
         }
 
-        public static async Task<List<ShoppingCartItem>> GetShoppingCartItems(int userId)
+        public static async Task<CustomerBasket> GetBasket(string basket_id)
         {
             await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/" + userId);
-            return JsonConvert.DeserializeObject<List<ShoppingCartItem>>(response);
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Basket?id=" + basket_id);
+            return JsonConvert.DeserializeObject<CustomerBasket>(response);
         }
 
         public static async Task<TotalCartItem> GetTotalCartItems(int userId)
@@ -124,6 +146,8 @@ namespace RealWorldApp.Services
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/TotalItems/" + userId);
             return JsonConvert.DeserializeObject<TotalCartItem>(response);
         }
+
+
 
         public static async Task<bool> ClearShoppingCart(int userId)
         {

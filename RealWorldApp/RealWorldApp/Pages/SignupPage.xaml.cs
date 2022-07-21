@@ -29,7 +29,7 @@ namespace RealWorldApp.Pages
                 var response = await ApiService.RegisterUser(EntName.Text, EntEmail.Text, EntPassword.Text);
                 if (response)
                 {
-                    await DisplayAlert("Hi", "Your account has been created", "Alright");
+                    await DisplayAlert("Hi", "Your account has been created\nPlease confirm your email", "Alright");
                     await Navigation.PushModalAsync(new LoginPage());
                 }
                 else
