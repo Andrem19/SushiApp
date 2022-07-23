@@ -22,7 +22,10 @@
                                FontSize="Medium" />
                         <CollectionView  x:Name="CvCategories"
                                          HeightRequest="130"
-                                         SelectionMode="Single">
+                                         SelectionMode="Single"
+                                         SelectionChanged="CvCategories_SelectionChanged"
+                                         BindingContext="{Binding name}"
+                                         > 
                             <CollectionView.ItemsLayout>
                                 <LinearItemsLayout Orientation="Horizontal" />
                             </CollectionView.ItemsLayout>
@@ -33,7 +36,8 @@
                                                BackgroundColor="Transparent"
                                                Margin="15,0,15,0"
                                                HasShadow="True">
-                                            <StackLayout Orientation="Vertical">
+                                            <StackLayout Orientation="Vertical"
+                                                         >
                                                 <Frame Padding="0"
                                                        CornerRadius="100"
                                                        IsClippedToBounds="True"
@@ -42,7 +46,7 @@
                                                        HorizontalOptions="Center">
                                                     <Image Aspect="AspectFill"
                                                            HorizontalOptions="FillAndExpand"
-                                                           VerticalOptions="FillAndExpand" 
+                                                           VerticalOptions="FillAndExpand"
                                                            Source="{Binding imageUrl}"/>
                                                 </Frame>
                                                 <Label TextColor="#B00905"
@@ -69,9 +73,16 @@
                                      Orientation="Vertical">
                             <Image Aspect="Fill"
                                    HeightRequest="150"
-                                   WidthRequest="150" 
-                                   Source="{Binding PictureUrl}"/>
-                            <Label TextColor="#000000" 
+                                   WidthRequest="150"
+                                   Source="{Binding PictureUrl}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        CommandParameter="{Binding Id}"
+                                        Tapped="OnImageNameTapped"
+                                        NumberOfTapsRequired="1" />
+                                </Image.GestureRecognizers> 
+                            </Image>
+                                <Label TextColor="#000000" 
                                    Text="{Binding Name}"/>
 
                             <Label TextColor="#B00905" 
@@ -152,7 +163,7 @@
                                    TextColor="White" />
                         </Frame>
                         <Grid.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapCartIcon" />
+                            <TapGestureRecognizer x:Name="TapCartIcon" Tapped="TapCarTIcon_Tapped" />
                         </Grid.GestureRecognizers>
                     </Grid>
                 </StackLayout>
@@ -222,22 +233,7 @@
                                VerticalTextAlignment="Center"
                                FontSize="20" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapCart" />
-                        </StackLayout.GestureRecognizers>
-                    </StackLayout>
-                    <StackLayout Spacing="30"
-                                 Orientation="Horizontal"
-                                 Margin="20,0,0,0">
-                        <Image Source="contact.png"
-                               HeightRequest="30"
-                               WidthRequest="30" />
-                        <Label Text="Contact"
-                               TextColor="#80574D"
-                               HeightRequest="50"
-                               VerticalTextAlignment="Center"
-                               FontSize="20" />
-                        <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="TapContact" />
+                            <TapGestureRecognizer x:Name="TapCart" Tapped="ShoppingCart_Tapped"/>
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
                     <StackLayout Spacing="30"

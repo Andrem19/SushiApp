@@ -50,53 +50,62 @@ namespace RealWorldApp.Services
             Preferences.Set("Email", result.Email);
             return true;
         }
+        public static async Task<bool> FBLogin(string token, string referal = "0")
+        {
+            var login = new FBLogin()
+            {
+                AccessToken = token,
+                ReferalCode = referal
+            };
+
+            var httpClient = new HttpClient();
+            var json = JsonConvert.SerializeObject(login);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync(AppSettings.ApiUrlProd + "api/Account/loginfb", content);
+            if (!response.IsSuccessStatusCode) return false;
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<UserDto>(jsonResult);
+            Preferences.Set("accessToken", result.Token);
+            Preferences.Set("userName", result.DisplayName);
+            Preferences.Set("Email", result.Email);
+            return true;
+        }
+
+        public static async Task<AddressDto> GetUserAddress()
+        {
+            string token = Preferences.Get("accessToken", string.Empty);
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            var response = await httpClient.GetAsync(AppSettings.ApiUrlProd + "api/Account/address");
+            var resp = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<AddressDto>(resp);
+            return result;
+        }
 
         public static async Task<List<Category>> GetCategories()
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/product/category");
             return JsonConvert.DeserializeObject<List<Category>>(response);
         }
 
-        public static async Task<ProductToReturnDto> GetProductById(int productId)
-        {
-            await TokenValidator.CheckTokenValidity();
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/Product/" + productId);
-            return JsonConvert.DeserializeObject<ProductToReturnDto>(response);
-        }
-
-        public static async Task<List<ProductByCategory>> GetProductByCategory(int categoryId)
-        {
-            await TokenValidator.CheckTokenValidity();
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Products/ProductsByCategory/" + categoryId);
-            return JsonConvert.DeserializeObject<List<ProductByCategory>>(response);
-        }
-
         public static async Task<List<ProductToReturnDto>> GetProducts()
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/product/getallproducts");
             return JsonConvert.DeserializeObject<List<ProductToReturnDto>>(response);
         }
-        public static async Task<CustomerBasket> GetBasketById(string basket_id)
+        public static async Task<List<ProductToReturnDto>> GetProductsByCategory(string category)
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/basket?id=" + basket_id);
-            return JsonConvert.DeserializeObject<CustomerBasket>(response);
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/product/getallproducts?category=" + category);
+            return JsonConvert.DeserializeObject<List<ProductToReturnDto>>(response);
         }
         public static async Task<CustomerBasket> CreateBasket(CustomerBasket basket)
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             var json = JsonConvert.SerializeObject(basket);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -109,7 +118,6 @@ namespace RealWorldApp.Services
 
         public static async Task<CustomerBasket> AddItemToBasket(CustomerBasket basket)
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             var json = JsonConvert.SerializeObject(basket);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -120,48 +128,23 @@ namespace RealWorldApp.Services
             return basket_response;
         }
 
-        public static async Task<CartSubTotal> GetCartSubTotal(int userId)
-        {
-            await TokenValidator.CheckTokenValidity();
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/SubTotal/" + userId);
-            return JsonConvert.DeserializeObject<CartSubTotal>(response);
-        }
-
         public static async Task<CustomerBasket> GetBasket(string basket_id)
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Basket?id=" + basket_id);
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/basket?id=" + basket_id);
             return JsonConvert.DeserializeObject<CustomerBasket>(response);
         }
-
-        public static async Task<TotalCartItem> GetTotalCartItems(int userId)
+        public static async Task<bool> DeleteBasket(string basket_id)
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/TotalItems/" + userId);
-            return JsonConvert.DeserializeObject<TotalCartItem>(response);
-        }
-
-
-
-        public static async Task<bool> ClearShoppingCart(int userId)
-        {
-            await TokenValidator.CheckTokenValidity();
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.DeleteAsync(AppSettings.ApiUrl + "api/ShoppingCartItems/" + userId);
-            if (!response.IsSuccessStatusCode) return false;
+            var response = await httpClient.DeleteAsync(AppSettings.ApiUrlProd + "api/Basket?id=" + basket_id);
             return true;
         }
 
         public static async Task<OrderResponse> PlaceOrder(Order order)
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             var json = JsonConvert.SerializeObject(order);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -173,7 +156,6 @@ namespace RealWorldApp.Services
 
         public static async Task<List<OrderByUser>> GetOrdersByUser(int userId)
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Orders/OrdersByUser/" + userId);
@@ -182,14 +164,12 @@ namespace RealWorldApp.Services
 
         public static async Task<List<Order>> GetOrderDetails(int orderId)
         {
-            await TokenValidator.CheckTokenValidity();
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Orders/OrderDetails/" + orderId);
             return JsonConvert.DeserializeObject<List<Order>>(response);
         }
     }
-
     public static class TokenValidator
     {
         public static async Task CheckTokenValidity()
@@ -201,7 +181,7 @@ namespace RealWorldApp.Services
             {
                 var email = Preferences.Get("email", string.Empty);
                 var password = Preferences.Get("password", string.Empty);
-                await ApiService.Login(email,password);
+                await ApiService.Login(email, password);
             }
         }
     }

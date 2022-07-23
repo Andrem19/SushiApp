@@ -4,8 +4,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using RealWorldApp.Models;
@@ -23,7 +21,6 @@ namespace RealWorldApp.Pages
         public int Id;
         public HomePage()
         {
-            if (Debugger.IsAttached) Preferences.Clear();
             InitializeComponent();
             ProductsCollection = new ObservableCollection<ProductToReturnDto>();
             CategoriesCollection = new ObservableCollection<Category>();
@@ -107,8 +104,8 @@ namespace RealWorldApp.Pages
             }
             else
             {
-                CustomerBasket basket = await ApiService.GetBasketById(basket_id);
-                int index = basket.Items.FindIndex(x => x.Id == Convert.ToInt32(((Button)sender).BindingContext.ToString()));
+                CustomerBasket basket = await ApiService.GetBasket(basket_id);
+                int index = basket.Items.FindIndex(x => x.IdProd == Convert.ToInt32(((Button)sender).BindingContext.ToString()));
                 if (index == -1)
                 {
                     ProductToReturnDto product = GetProductFromId(((Button)sender).BindingContext.ToString());
@@ -128,13 +125,67 @@ namespace RealWorldApp.Pages
                 await ApiService.AddItemToBasket(basket);
                 LblTotalItems.Text = basket.Items.Count.ToString();
             }
-            
+            await DisplayAlert("", "Your sushi has been aded to the basket", "Alright");
         }
         public ProductToReturnDto GetProductFromId(string product_id)
         {
             List<ProductToReturnDto> prodList = ProductsCollection.ToList();
             ProductToReturnDto product = prodList.FirstOrDefault(x => x.Id == Convert.ToInt32(product_id));
             return product;
+        }
+
+        private async void CvCategories_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var currentSelection = e.CurrentSelection.FirstOrDefault() as Category;
+            var products = await ApiService.GetProductsByCategory(currentSelection.name);
+            ProductsCollection.Clear();
+            foreach (var product in products)
+            {
+                ProductsCollection.Add(product);
+            }
+            CvProducts.ItemsSource = ProductsCollection;
+        }
+
+        private async void OnImageNameTapped(object sender, EventArgs e)
+        {
+            Image lblClicked = (Image)sender;
+            var item = (TapGestureRecognizer)lblClicked.GestureRecognizers[0];
+            var id = item.CommandParameter;
+
+            ProductToReturnDto product = GetProductFromId(id.ToString());
+            StringBuilder ingr = new StringBuilder();
+            for (int i = 0; i < product.Ingridients.Count; i++)
+            {
+                ingr.Append("● ");
+                ingr.Append(product.Ingridients[i] + " ");
+                if ((i+1)%1==0) ingr.Append("      ");
+                if ((i+1)%2==0) ingr.Append("\n");
+            }
+            await DisplayAlert("Ingridients", ingr.ToString(), "Alright");
+        }
+
+        private async void TapCarTIcon_Tapped(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Preferences.Get("basket_id", string.Empty)))
+            {
+                await Navigation.PushModalAsync(new CartPage());
+            }
+            else
+            {
+                await DisplayAlert("", "You have no item in the basket", "Ok");
+            }
+        }
+
+        private async void ShoppingCart_Tapped(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Preferences.Get("basket_id", string.Empty)))
+            {
+                await Navigation.PushModalAsync(new CartPage());
+            }
+            else
+            {
+                await DisplayAlert("", "You have no item in the basket", "Ok");
+            }
         }
     }
 }

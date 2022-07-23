@@ -4,9 +4,8 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="RealWorldApp.Pages.LoginPage"
-             BackgroundColor="#F7F5F4"
-             NavigationPage.HasNavigationBar="False">
+             x:Class="RealWorldApp.Pages.PlaceOrderPage"
+             BackgroundColor="#F7F5F4">
     <ContentPage.Content>
         <StackLayout Spacing="20"
                      Margin="25">
@@ -21,12 +20,12 @@
                        HorizontalOptions="Center"
                        VerticalOptions="Center">
                     <Image.GestureRecognizers>
-                        <TapGestureRecognizer x:Name="TapBackArrow" Tapped="TapBackArrow_Tapped" />
+                        <TapGestureRecognizer x:Name="TapBack" Tapped="TapBack_Tapped" />
                     </Image.GestureRecognizers>
                 </Image>
                 <Label Grid.Column="1"
                        TextColor="#CE0B06"
-                       Text="LOGIN"
+                       Text="PLACE ORDER"
                        FontSize="Large"
                        FontAttributes="Bold"
                        VerticalOptions="Center"
@@ -35,37 +34,49 @@
             </Grid>
             <Frame HasShadow="True"
                    Padding="25"
-                   Margin="0,80,0,50">
-                <StackLayout Margin="0,40,0,40">
-                    <Label Text="Sign In"
+                   Margin="0,30,0,30">
+                <StackLayout Margin="0,10,0,10">
+                    <Label Text="Provide Your Details"
                            FontAttributes="Bold"
-                           FontSize="Title"
+                           FontSize="Large"
                            HorizontalTextAlignment="Center"
                            TextColor="#CE0B06" />
-                    <Entry Placeholder="Email"
+                    <Entry Placeholder="Name"
                            PlaceholderColor="#80574D"
                            TextColor="#80574D"
-                           x:Name="EntEmail"
-                           Keyboard="Email" />
-                    <Entry Placeholder="Password"
+                           x:Name="EntName"
+                           Keyboard="Text" />
+                    <Entry Placeholder="Phone"
                            PlaceholderColor="#80574D"
                            TextColor="#80574D"
-                           IsPassword="True"
-                           x:Name="EntPassword"
-                           Keyboard="Default" />
+                           x:Name="EntPhone"
+                           Keyboard="Numeric" />
+                    <Editor Placeholder="Postcode"
+                            PlaceholderColor="#80574D"
+                            TextColor="#80574D"
+                            x:Name="EntPostcode"
+                            Keyboard="Text" />
+                    <Editor Placeholder="Address Line 1"
+                            PlaceholderColor="#80574D"
+                            TextColor="#80574D"
+                            x:Name="EntLine1"
+                            Keyboard="Text" />
+                    <Editor Placeholder="Address Line 2"
+                            PlaceholderColor="#80574D"
+                            TextColor="#80574D"
+                            x:Name="EntLine2"
+                            Keyboard="Text" />
+                    <Editor Placeholder="Town/City"
+                            PlaceholderColor="#80574D"
+                            TextColor="#80574D"
+                            x:Name="EntCity"
+                            Keyboard="Text" />
                 </StackLayout>
             </Frame>
-            <Button Text="Login"
+            <Button Text="NEXT"
                     BackgroundColor="#CE0B06"
                     TextColor="White"
-                    x:Name="BtnLogin"
-                    Clicked="BtnLogin_Clicked"/>
-            <Button Text="Continue With Facebook"
-                    BackgroundColor="#4267B2"
-                    TextColor="White"
-                    x:Name="BtnFacebook"
-                    Command="{Binding OnLoginWithFacebookCommand}"
-                     />
+                    x:Name="BtnNext"  Clicked="Next_Button"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
