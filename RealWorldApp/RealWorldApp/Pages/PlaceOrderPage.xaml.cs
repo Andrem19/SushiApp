@@ -14,13 +14,21 @@ namespace RealWorldApp.Pages
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class PlaceOrderPage : ContentPage
     {
-        private UserDto _currentUser { get; set; }
         private AddressDto Address { get; set; }
+        public bool addressComplite { get; set; }
         public PlaceOrderPage()
         {
             InitializeComponent();
-
+            DisableButton();
             GetCurrentUser();
+        }
+        public void DisableButton()
+        {
+            if (string.IsNullOrEmpty(EntName.Text) || string.IsNullOrEmpty(EntLine1.Text) || string.IsNullOrEmpty(EntCity.Text) ||
+                string.IsNullOrEmpty(EntPostcode.Text) || string.IsNullOrEmpty(EntLine2.Text) || string.IsNullOrEmpty(EntPhone.Text))
+            {
+                addressComplite = false;
+            }
         }
 
         public async void GetCurrentUser()
@@ -40,9 +48,38 @@ namespace RealWorldApp.Pages
             Navigation.PopModalAsync();
         }
 
-        private void Next_Button(object sender, EventArgs e)
+        private async void Next_Button(object sender, EventArgs e)
         {
-
+            AddressDto address = new AddressDto();
+            address.Name = EntName.Text;
+            address.TelephoneNumber = EntPhone.Text;
+            address.PostCode = EntPostcode.Text;
+            address.Street = EntLine2?.Text;
+            address.NumberOfHouse = EntLine1?.Text;
+            address.City = EntCity.Text;
+            if (string.IsNullOrEmpty(address.Name) || string.IsNullOrEmpty(address.TelephoneNumber) || string.IsNullOrEmpty(address.PostCode)
+                || string.IsNullOrEmpty(address.Street) || string.IsNullOrEmpty(address.NumberOfHouse) || string.IsNullOrEmpty(address.City))
+            {
+                await DisplayAlert("", "Fill in all the fields", "Ok");
+            }
+            else
+            {
+                PointReturn pointInfo = await ApiService.WhereIAm(address);
+                if (pointInfo.Enable != false)
+                {
+                    if (SaveAddress.IsChecked == true)
+                    {
+                        await ApiService.UpdateAddress(address);
+                    }
+                    await Navigation.PushModalAsync(new DeliveryPage(pointInfo, address));
+                }
+                else
+                {
+                    await DisplayAlert("Sorry", "There is no service in your city. We are working on expanding our network", "Ok");
+                }
+                
+            }
+            
         }
     }
 }

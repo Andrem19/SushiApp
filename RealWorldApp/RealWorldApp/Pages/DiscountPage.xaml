@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RealWorldApp.Pages.DiscountPage">
+    <ContentPage.Content>
+        <StackLayout Spacing="20"
+                     Margin="25">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Image Source="backarrow.png"
+                       HeightRequest="25"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer x:Name="TapBack" Tapped="TapBack_Tapped" />
+                    </Image.GestureRecognizers>
+                </Image>
+                <Label Grid.Column="1"
+                       TextColor="#CE0B06"
+                       Text="Discount"
+                       FontSize="Large"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       HorizontalOptions="Center" />
+            </Grid>
+            <Frame HasShadow="True"
+                   Padding="25"
+                   Margin="0,30,0,30">
+                <StackLayout Margin="0,10,0,10">
+                    <Label Text="Choose your discount"
+                           FontAttributes="Bold"
+                           FontSize="Large"
+                           HorizontalTextAlignment="Center"
+                           TextColor="#CE0B06" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition x:Name="Row0" Height="Auto" />
+                            <RowDefinition x:Name="Row1" Height="Auto" />
+                            <RowDefinition x:Name="Row2" Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        
+                        <Label Grid.Row="0" Grid.Column="0" x:Name="QuantityOfRefDisc" Margin="0, 5, 0, 0" Text="5" />
+                        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="ReferalDiscount" />
+                        <Label Grid.Row="0" Grid.Column="2" Text="-10%" x:Name="RefPerc"/>
+                        <Label Grid.Row="0" Grid.Column="3" Text="Referal Discount" x:Name="RefI"/>
+                        <Label Grid.Row="0" Grid.ColumnSpan="4" Grid.Column="0" x:Name="RefInfo" FontSize="Small" IsVisible="false">
+                        <Label.FormattedText>
+                           <FormattedString>
+                                    <Span Text="At the moment you do not have referral discounts.  To get them, invite your friends to us through a referral " />
+                                    <Span Text="link"
+                                TextColor="Blue"
+                                TextDecorations="Underline">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding TapCommand}" />
+                                </Span.GestureRecognizers>
+                            </Span>
+                          </FormattedString>
+                        </Label.FormattedText>
+                       </Label>
+                        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="AcumulateDiscount"/>
+                        <Label Grid.Row="1" Grid.Column="2" Text="-10%" x:Name="AcumPerc"/>
+                        <Label Grid.Row="1" Grid.Column="3" Text="Acumulate Discount" x:Name="AcumI"/>
+                        <Label Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" x:Name="AcumInfo" FontSize="Small" Text="At the moment you have no accumulated discounts.  To get them you should order more." IsVisible="false"/>
+
+
+                        <Label Margin="0, 10, 0, 0" Grid.Row="2" Grid.Column="0" Text="Promo Code:"/>
+                        <Label Margin="0, 10, 0, 0" Grid.Row="2" Grid.Column="2" Text="-10%"/>
+                        <Editor x:Name="promoCodeEditor" TextChanged="PromoCodeChanging" FontSize="Small" Grid.Row="2" Grid.Column="3" Placeholder="xxxxxxxxx" PlaceholderColor="#80574D" TextColor="#80574D"/>
+                        <Image x:Name="completeImg" HeightRequest="10" Grid.Row="2" Grid.Column="1" Source="complete.png" IsVisible="false"/>
+                    </Grid>
+                    
+                </StackLayout>
+            </Frame>
+            <Button Text="TO REVIEW"
+                    BackgroundColor="#CE0B06"
+                    TextColor="White"
+                    x:Name="BtnNext"  Clicked="To_Review"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

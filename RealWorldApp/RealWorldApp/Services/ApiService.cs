@@ -70,6 +70,26 @@ namespace RealWorldApp.Services
             Preferences.Set("Email", result.Email);
             return true;
         }
+        public static async Task<UserDto> GetUser()
+        {
+            string token = Preferences.Get("accessToken", string.Empty);
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            var response = await httpClient.GetAsync(AppSettings.ApiUrlProd + "api/Account/currentUser");
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<UserDto>(jsonResult);
+            return result;
+        }
+        public static async Task<bool> CheckPromo(string promo)
+        {
+            string token = Preferences.Get("accessToken", string.Empty);
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            var response = await httpClient.GetAsync(AppSettings.ApiUrlProd + "api/Discount/promocode?promo=" + promo);
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<bool>(jsonResult);
+            return result;
+        }
 
         public static async Task<AddressDto> GetUserAddress()
         {
@@ -115,7 +135,28 @@ namespace RealWorldApp.Services
             CustomerBasket basket_response = JsonConvert.DeserializeObject<CustomerBasket>(resp);
             return basket_response;
         }
-
+        public static async Task<AddressDto> UpdateAddress(AddressDto address)
+        {
+            var httpClient = new HttpClient();
+            var json = JsonConvert.SerializeObject(address);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
+            var response = await httpClient.PutAsync(AppSettings.ApiUrlProd + "api/account/address", content);
+            var resp = await response.Content.ReadAsStringAsync();
+            AddressDto addressReturned = JsonConvert.DeserializeObject<AddressDto>(resp);
+            return addressReturned;
+        }
+        public static async Task<PointReturn> WhereIAm(AddressDto address)
+        {
+            var httpClient = new HttpClient();
+            var json = JsonConvert.SerializeObject(address);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
+            var response = await httpClient.PutAsync(AppSettings.ApiUrlProd + "api/map/where", content);
+            var resp = await response.Content.ReadAsStringAsync();
+            PointReturn basket_response = JsonConvert.DeserializeObject<PointReturn>(resp);
+            return basket_response;
+        }
         public static async Task<CustomerBasket> AddItemToBasket(CustomerBasket basket)
         {
             var httpClient = new HttpClient();
@@ -169,6 +210,7 @@ namespace RealWorldApp.Services
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Orders/OrderDetails/" + orderId);
             return JsonConvert.DeserializeObject<List<Order>>(response);
         }
+
     }
     public static class TokenValidator
     {
