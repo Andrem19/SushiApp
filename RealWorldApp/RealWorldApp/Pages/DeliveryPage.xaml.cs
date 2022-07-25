@@ -30,7 +30,8 @@ namespace RealWorldApp.Pages
         {
             _basket = await ApiService.GetBasket(Preferences.Get("basket_id", string.Empty));
         }
-            private async void Next_Button(object sender, EventArgs e)
+        
+        private async void Next_Button(object sender, EventArgs e)
         {
             await Navigation.PushModalAsync(new DiscountPage(_basket, _address));
         }

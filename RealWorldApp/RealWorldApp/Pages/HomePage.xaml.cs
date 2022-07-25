@@ -187,5 +187,15 @@ namespace RealWorldApp.Pages
                 await DisplayAlert("", "You have no item in the basket", "Ok");
             }
         }
+
+        private async void TapOrder_Tapped(object sender, EventArgs e)
+        {
+            await Navigation.PushModalAsync(new OrderPage());
+        }
+
+        private async void TapReferals_Tapped(object sender, EventArgs e)
+        {
+            await Navigation.PushModalAsync(new ReferalPage());
+        }
     }
 }

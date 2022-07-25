@@ -54,7 +54,7 @@
 
                         
                         <Label Grid.Row="0" Grid.Column="0" x:Name="QuantityOfRefDisc" Margin="0, 5, 0, 0" Text="5" />
-                        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="ReferalDiscount" />
+                        <CheckBox CheckedChanged="RefCheckBoxChanged" Grid.Row="0" Grid.Column="1" x:Name="ReferalDiscount" />
                         <Label Grid.Row="0" Grid.Column="2" Text="-10%" x:Name="RefPerc"/>
                         <Label Grid.Row="0" Grid.Column="3" Text="Referal Discount" x:Name="RefI"/>
                         <Label Grid.Row="0" Grid.ColumnSpan="4" Grid.Column="0" x:Name="RefInfo" FontSize="Small" IsVisible="false">
@@ -71,16 +71,17 @@
                           </FormattedString>
                         </Label.FormattedText>
                        </Label>
-                        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="AcumulateDiscount"/>
+                        <CheckBox CheckedChanged="AcumCheckBoxChanged" Grid.Row="1" Grid.Column="1" x:Name="AcumulateDiscount"/>
                         <Label Grid.Row="1" Grid.Column="2" Text="-10%" x:Name="AcumPerc"/>
                         <Label Grid.Row="1" Grid.Column="3" Text="Acumulate Discount" x:Name="AcumI"/>
                         <Label Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" x:Name="AcumInfo" FontSize="Small" Text="At the moment you have no accumulated discounts.  To get them you should order more." IsVisible="false"/>
 
 
-                        <Label Margin="0, 10, 0, 0" Grid.Row="2" Grid.Column="0" Text="Promo Code:"/>
-                        <Label Margin="0, 10, 0, 0" Grid.Row="2" Grid.Column="2" Text="-10%"/>
+                        <Label x:Name="Promo1" Margin="0, 10, 0, 0" Grid.Row="2" Grid.Column="0" Text="Promo Code:"/>
+                        <Label x:Name="Promo2" Margin="0, 10, 0, 0" Grid.Row="2" Grid.Column="2" Text="-10%"/>
                         <Editor x:Name="promoCodeEditor" TextChanged="PromoCodeChanging" FontSize="Small" Grid.Row="2" Grid.Column="3" Placeholder="xxxxxxxxx" PlaceholderColor="#80574D" TextColor="#80574D"/>
-                        <Image x:Name="completeImg" HeightRequest="10" Grid.Row="2" Grid.Column="1" Source="complete.png" IsVisible="false"/>
+                        <Image x:Name="completeImg" HeightRequest="10" Grid.Row="2" Grid.Column="1" IsVisible="false"/>
+                        <Label Grid.Row="2" Grid.ColumnSpan="4" Grid.Column="0" x:Name="PromoInfo" FontSize="Small" Text="You can't use Promo Code and another discounts togather." IsVisible="false"/>
                     </Grid>
                     
                 </StackLayout>

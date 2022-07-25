@@ -184,31 +184,39 @@ namespace RealWorldApp.Services
             return true;
         }
 
-        public static async Task<OrderResponse> PlaceOrder(Order order)
+        public static async Task<bool> CreatePaymentIntent(string basket_id)
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
+            await httpClient.PostAsync(AppSettings.ApiUrlProd + "api/payments/" + basket_id, null);
+            return true;
+        }
+
+        public static async Task<OrderResponse> PlaceOrder(OrderToCreate order)
         {
             var httpClient = new HttpClient();
             var json = JsonConvert.SerializeObject(order);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.PostAsync(AppSettings.ApiUrl + "api/Orders", content);
+            var response = await httpClient.PostAsync(AppSettings.ApiUrlProd + "api/Orders", content);
             var jsonResult = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<OrderResponse>(jsonResult);
         }
 
-        public static async Task<List<OrderByUser>> GetOrdersByUser(int userId)
+        public static async Task<List<OrderResponse>> GetOrdersByUser()
         {
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Orders/OrdersByUser/" + userId);
-            return JsonConvert.DeserializeObject<List<OrderByUser>>(response);
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/Orders");
+            return JsonConvert.DeserializeObject<List<OrderResponse>>(response);
         }
 
-        public static async Task<List<Order>> GetOrderDetails(int orderId)
+        public static async Task<OrderResponse> GetOrderDetails(int orderId)
         {
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
-            var response = await httpClient.GetStringAsync(AppSettings.ApiUrl + "api/Orders/OrderDetails/" + orderId);
-            return JsonConvert.DeserializeObject<List<Order>>(response);
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/Orders/" + orderId);
+            return JsonConvert.DeserializeObject<OrderResponse>(response);
         }
 
     }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -58,6 +59,61 @@ namespace RealWorldApp.Pages
         private async void PromoCodeChanging(object sender, TextChangedEventArgs e)
         {
             string promo = promoCodeEditor.Text.ToString();
+            if (promo.Length > 0)
+            {
+                QuantityOfRefDisc.IsVisible = false;
+                ReferalDiscount.IsVisible = false;
+                RefPerc.IsVisible = false;
+                RefI.IsVisible = false;
+                RefInfo.IsVisible = false;
+                AcumulateDiscount.IsVisible = false;
+                AcumPerc.IsVisible = false;
+                AcumI.IsVisible = false;
+
+                AcumInfo.Text = "You can't use Promo Code and another discounts togather.";
+                AcumInfo.IsVisible = true;
+            }
+            else
+            {
+                completeImg.IsVisible = false;
+                if (_currentUser.RefDiscount == 0)
+                {
+                    QuantityOfRefDisc.IsVisible = false;
+                    ReferalDiscount.IsVisible = false;
+                    RefPerc.IsVisible = false;
+                    RefI.IsVisible = false;
+                    RefInfo.IsVisible = true;
+
+                }
+                else
+                {
+                    QuantityOfRefDisc.IsVisible = true;
+                    ReferalDiscount.IsVisible = true;
+                    RefPerc.IsVisible = true;
+                    RefI.IsVisible = true;
+                    RefInfo.IsVisible = false;
+                }
+                if (_currentUser.AcumDiscount == false)
+                {
+                    AcumulateDiscount.IsVisible = false;
+                    AcumPerc.IsVisible = false;
+                    AcumI.IsVisible = false;
+
+                    AcumInfo.Text = "At the moment you have no accumulated discounts.  To get them you should order more.";
+                    AcumInfo.IsVisible = true;
+                }
+                else
+                {
+                    AcumulateDiscount.IsVisible = true;
+                    AcumPerc.IsVisible = true;
+                    AcumI.IsVisible = true;
+
+                    AcumInfo.Text = "At the moment you have no accumulated discounts.  To get them you should order more.";
+                    AcumInfo.IsVisible = false;
+                }
+            }
+
+            
             if (promo.Length > 8)
             {
                 bool triger = await ApiService.CheckPromo(promo);
@@ -76,9 +132,58 @@ namespace RealWorldApp.Pages
             }
         }
 
-        private void To_Review(object sender, EventArgs e)
+        private async void To_Review(object sender, EventArgs e)
         {
+            string basket_id = Preferences.Get("basket_id", string.Empty);
+            await ApiService.AddItemToBasket(_basket);
+            await ApiService.CreatePaymentIntent(basket_id);
+            await Navigation.PushModalAsync(new ReviewPage(_address, _basket));
+        }
 
+        private void RefCheckBoxChanged(object sender, CheckedChangedEventArgs e)
+        {
+            completeImg.IsVisible = false;
+            promoCodeEditor.IsVisible = false;
+            Promo1.IsVisible = false;
+            Promo2.IsVisible = false;
+            PromoInfo.IsVisible = true;
+            _basket.promoDisc = "1";
+            if (ReferalDiscount.IsChecked == true)
+            {
+                _basket.refDisc = true;
+            }
+            else if (AcumulateDiscount.IsChecked == false && ReferalDiscount.IsChecked == false)
+            {
+                _basket.refDisc = false;
+                completeImg.IsVisible = false;
+                promoCodeEditor.IsVisible = true;
+                Promo1.IsVisible = true;
+                Promo2.IsVisible = true;
+                PromoInfo.IsVisible = false;
+            }
+        }
+
+        private void AcumCheckBoxChanged(object sender, CheckedChangedEventArgs e)
+        {
+            completeImg.IsVisible = false;
+            promoCodeEditor.IsVisible = false;
+            Promo1.IsVisible = false;
+            Promo2.IsVisible = false;
+            PromoInfo.IsVisible = true;
+            _basket.promoDisc = "1";
+            if (AcumulateDiscount.IsChecked == true)
+            {
+                _basket.acumDisc = true;
+            }
+            else if (AcumulateDiscount.IsChecked == false && ReferalDiscount.IsChecked == false)
+            {
+                _basket.acumDisc = false;
+                completeImg.IsVisible = false;
+                promoCodeEditor.IsVisible = true;
+                Promo1.IsVisible = true;
+                Promo2.IsVisible = true;
+                PromoInfo.IsVisible = false;
+            }
         }
     }
 }
