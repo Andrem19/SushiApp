@@ -1,4 +1,5 @@
-﻿using RealWorldApp.Models.ModelsProd;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using RealWorldApp.Models.ModelsProd;
 using RealWorldApp.Services;
 using System;
 using System.Collections.Generic;
@@ -16,15 +17,23 @@ namespace RealWorldApp.Pages
     {
         PointReturn _pointInfo { get; set; }
         AddressDto _address { get; set; }
+        HubConnection _connection;
         CustomerBasket _basket { get; set; }
-        public DeliveryPage(PointReturn pointInfo, AddressDto address)
+        public DeliveryPage(PointReturn pointInfo, AddressDto address, HubConnection connection)
         {
             InitializeComponent();
+            _connection = connection;
             _pointInfo = pointInfo;
             _address = address;
             CostDelivery.Content = "Normal delivery " + "£" + pointInfo.DeliveryCost.ToString();
             GetBasket();
             SetCheckBoxes();
+        }
+
+        public async Task SavePointToTheBasket()
+        {
+            _basket.Point = _pointInfo.PointNumber;
+            await ApiService.AddItemToBasket(_basket);
         }
         private async void GetBasket()
         {
@@ -33,7 +42,8 @@ namespace RealWorldApp.Pages
         
         private async void Next_Button(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new DiscountPage(_basket, _address));
+            await SavePointToTheBasket();
+            await Navigation.PushModalAsync(new DiscountPage(_basket, _address, _connection));
         }
 
         public void SetCheckBoxes()

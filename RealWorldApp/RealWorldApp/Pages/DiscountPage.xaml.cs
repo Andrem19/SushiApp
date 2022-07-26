@@ -1,4 +1,5 @@
-﻿using RealWorldApp.Models.ModelsProd;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using RealWorldApp.Models.ModelsProd;
 using RealWorldApp.Services;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,13 @@ namespace RealWorldApp.Pages
     {
         public ICommand TapCommand => new Command(async () => await Navigation.PushModalAsync(new ReferalPage()));
         AddressDto _address { get; set; }
+        HubConnection _connection;
         CustomerBasket _basket { get; set; }
         UserDto _currentUser { get; set; }
-        public DiscountPage(CustomerBasket basket, AddressDto address)
+        public DiscountPage(CustomerBasket basket, AddressDto address, HubConnection connection)
         {
             InitializeComponent();
+            _connection = connection;
             BindingContext = this;
             _basket = basket;
             _address = address;
@@ -137,7 +140,7 @@ namespace RealWorldApp.Pages
             string basket_id = Preferences.Get("basket_id", string.Empty);
             await ApiService.AddItemToBasket(_basket);
             await ApiService.CreatePaymentIntent(basket_id);
-            await Navigation.PushModalAsync(new ReviewPage(_address, _basket));
+            await Navigation.PushModalAsync(new ReviewPage(_address, _basket, _connection));
         }
 
         private void RefCheckBoxChanged(object sender, CheckedChangedEventArgs e)

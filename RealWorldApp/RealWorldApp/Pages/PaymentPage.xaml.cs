@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using RealWorldApp.Models;
 using RealWorldApp.Models.ModelsProd;
@@ -19,10 +20,12 @@ namespace RealWorldApp.Pages
     {
         public AddressDto _address { get; set; }
         public CustomerBasket _basket { get; set; }
-        public PaymentPage(AddressDto address)
+        HubConnection _connection;
+        public PaymentPage(AddressDto address, HubConnection connection)
         {
             InitializeComponent();
             GetBasket();
+            _connection = connection;
             _address = address;
         }
 
@@ -42,6 +45,12 @@ namespace RealWorldApp.Pages
 
             await Pay(_address, _basket, card);
             Xamarin.Forms.Application.Current.MainPage = new NavigationPage(new HomePage());
+            if (_connection.State != HubConnectionState.Connected)
+            {
+                await DisplayAlert("", "connection faild", "ok");
+                await _connection.StartAsync();
+            }
+            await _connection.SendAsync("sendMsg", _basket.Point);
         }
     
         public async Task CreateOrder()

@@ -26,10 +26,10 @@ namespace RealWorldApp.Pages
             }
             else
             {
-                var response = await ApiService.RegisterUser(EntName.Text, EntEmail.Text, EntPassword.Text);
+                var response = await ApiService.RegisterUser(EntEmail.Text, EntPassword.Text);
                 if (response)
                 {
-                    await DisplayAlert("Hi", "Your account has been created\nPlease confirm your email", "Alright");
+                    await DisplayAlert("Hi", "Your account has been created\nPlease confirm your email, then you can login", "Alright");
                     await Navigation.PushModalAsync(new LoginPage());
                 }
                 else

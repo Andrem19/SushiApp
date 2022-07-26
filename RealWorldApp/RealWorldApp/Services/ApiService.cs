@@ -14,18 +14,18 @@ namespace RealWorldApp.Services
 {
     public static class ApiService
     {
-        public static async Task<bool> RegisterUser(string name, string email, string password)
+        public static async Task<bool> RegisterUser(string email, string password)
         {
             var register = new Register()
             {
-                Name = name,
-                Email = email,
-                Password = password
+                displayName = email,
+                email = email,
+                password = password
             };
             var httpClient = new HttpClient();
             var json = JsonConvert.SerializeObject(register);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync(AppSettings.ApiUrlProd + "api/Account/Register", content);
+            var response = await httpClient.PostAsync(AppSettings.ApiUrlProd + "api/Account/register", content);
             if (!response.IsSuccessStatusCode) return false;
             return true;
         }
@@ -78,6 +78,16 @@ namespace RealWorldApp.Services
             var response = await httpClient.GetAsync(AppSettings.ApiUrlProd + "api/Account/currentUser");
             var jsonResult = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<UserDto>(jsonResult);
+            return result;
+        }
+        public static async Task<List<ReferalsDto>> GetAllReferals()
+        {
+            string token = Preferences.Get("accessToken", string.Empty);
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            var response = await httpClient.GetAsync(AppSettings.ApiUrlProd + "api/Discount/getreferals");
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<List<ReferalsDto>>(jsonResult);
             return result;
         }
         public static async Task<bool> CheckPromo(string promo)

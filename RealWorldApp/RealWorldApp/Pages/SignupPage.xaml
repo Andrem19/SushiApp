@@ -26,11 +26,6 @@
                                FontSize="Title"
                                HorizontalOptions="Center"
                                TextColor="#CE0B06" />
-                        <Entry Placeholder="Full Name"
-                               PlaceholderColor="#80574D"
-                               TextColor="#80574D"
-                               x:Name="EntName"
-                               Keyboard="Text" />
                         <Entry Placeholder="Email"
                                PlaceholderColor="#80574D"
                                TextColor="#80574D"

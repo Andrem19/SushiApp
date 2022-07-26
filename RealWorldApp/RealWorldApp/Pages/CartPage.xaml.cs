@@ -9,6 +9,7 @@ using RealWorldApp.Services;
 using Xamarin.Forms.Xaml;
 using RealWorldApp.Models.ModelsProd;
 using System.Collections.ObjectModel;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace RealWorldApp.Pages
 {
@@ -17,9 +18,11 @@ namespace RealWorldApp.Pages
     {
         public ObservableCollection<BasketItemDto> ShoppingCartCollection;
         double totalPrice { get; set; }
-        public CartPage()
+        HubConnection _connection;
+        public CartPage(HubConnection connection)
         {
             InitializeComponent();
+            _connection = connection;
             ShoppingCartCollection = new ObservableCollection<BasketItemDto>();
             GetShoppingCartItems();
         }
@@ -69,7 +72,7 @@ namespace RealWorldApp.Pages
 
         private void BtnProceed_Clicked(object sender, EventArgs e)
         {
-            Navigation.PushModalAsync(new PlaceOrderPage());
+            Navigation.PushModalAsync(new PlaceOrderPage(_connection));
         }
 
         private async void TapDecrement_Tapped(object sender, EventArgs e)

@@ -10,24 +10,32 @@ using RealWorldApp.Models;
 using RealWorldApp.Models.ModelsProd;
 using Xamarin.Essentials;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
+using System.Net.Http;
 
 namespace RealWorldApp.Pages
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class HomePage : ContentPage
     {
+
         public ObservableCollection<ProductToReturnDto> ProductsCollection;
         public ObservableCollection<Category> CategoriesCollection;
+        ICustomNotification notification;
+        HubConnection _connection;
         public int Id;
         public HomePage()
         {
             InitializeComponent();
             ProductsCollection = new ObservableCollection<ProductToReturnDto>();
             CategoriesCollection = new ObservableCollection<Category>();
+            notification = DependencyService.Get<ICustomNotification>();
             GetPopularProducts();
             GetCategories();
             LblUserName.Text = Preferences.Get("userName", string.Empty);
         }
+
         private async void GetCategories()
         {
             var categories = await ApiService.GetCategories();
@@ -69,7 +77,39 @@ namespace RealWorldApp.Pages
 
         protected async override void OnAppearing()
         {
+            _connection = new HubConnectionBuilder()
+                .WithUrl($"{AppSettings.ApiUrlProd}hub/toastr", options =>
+                {
+                    options.HttpMessageHandlerFactory = (message) =>
+                    {
+                        if (message is HttpClientHandler clientHandler)
+                            // bypass SSL certificate
+                            clientHandler.ServerCertificateCustomValidationCallback +=
+                                                    (sender, certificate, chain, sslPolicyErrors) => { return true; };
+                        return message;
+                    };
+                })
+                .Build();
+
+            await _connection.StartAsync();
+
+            
+            if (_connection.State == HubConnectionState.Connected)
+            {
+                await _connection.InvokeAsync("authMe", Preferences.Get("Email", string.Empty));
+                _connection.On<string>("sendMsgResponse", (message) =>
+                {
+                    notification.send("New Order", message);
+                });
+                notification.send("", "Connected");
+            }
+            else
+            {
+                notification.send("", "Disconected");
+            }
+
             base.OnAppearing();
+
             string basket_id = Preferences.Get("basket_id", string.Empty);
             if (!string.IsNullOrEmpty(basket_id))
             {
@@ -168,7 +208,7 @@ namespace RealWorldApp.Pages
         {
             if (!string.IsNullOrEmpty(Preferences.Get("basket_id", string.Empty)))
             {
-                await Navigation.PushModalAsync(new CartPage());
+                await Navigation.PushModalAsync(new CartPage(_connection));
             }
             else
             {
@@ -180,7 +220,7 @@ namespace RealWorldApp.Pages
         {
             if (!string.IsNullOrEmpty(Preferences.Get("basket_id", string.Empty)))
             {
-                await Navigation.PushModalAsync(new CartPage());
+                await Navigation.PushModalAsync(new CartPage(_connection));
             }
             else
             {

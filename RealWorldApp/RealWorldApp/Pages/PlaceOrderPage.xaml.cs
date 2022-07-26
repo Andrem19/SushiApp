@@ -1,4 +1,5 @@
-﻿using RealWorldApp.Models.ModelsProd;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using RealWorldApp.Models.ModelsProd;
 using RealWorldApp.Services;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,12 @@ namespace RealWorldApp.Pages
     public partial class PlaceOrderPage : ContentPage
     {
         private AddressDto Address { get; set; }
+        HubConnection _connection;
         public bool addressComplite { get; set; }
-        public PlaceOrderPage()
+        public PlaceOrderPage(HubConnection connection)
         {
             InitializeComponent();
+            _connection = connection;
             DisableButton();
             GetCurrentUser();
         }
@@ -71,7 +74,7 @@ namespace RealWorldApp.Pages
                     {
                         await ApiService.UpdateAddress(address);
                     }
-                    await Navigation.PushModalAsync(new DeliveryPage(pointInfo, address));
+                    await Navigation.PushModalAsync(new DeliveryPage(pointInfo, address, _connection));
                 }
                 else
                 {

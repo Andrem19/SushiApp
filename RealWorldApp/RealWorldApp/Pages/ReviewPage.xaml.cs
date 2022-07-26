@@ -1,4 +1,5 @@
-﻿using RealWorldApp.Models.ModelsProd;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using RealWorldApp.Models.ModelsProd;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,10 +18,12 @@ namespace RealWorldApp.Pages
         AddressDto _address { get; set; }
         CustomerBasket _basket { get; set; }
         public ObservableCollection<BasketItemDto> ShoppingCartCollection;
+        HubConnection _connection;
         double subTotalPrice { get; set; }
-        public ReviewPage(AddressDto address, CustomerBasket basket)
+        public ReviewPage(AddressDto address, CustomerBasket basket, HubConnection connection)
         {
             InitializeComponent();
+            _connection = connection;
             ShoppingCartCollection = new ObservableCollection<BasketItemDto>();
             _address = address;
             _basket = basket;
@@ -34,7 +37,7 @@ namespace RealWorldApp.Pages
 
         private async void BtnProceed_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new PaymentPage(_address));
+            await Navigation.PushModalAsync(new PaymentPage(_address, _connection));
         }
 
         private void SetUpReview()

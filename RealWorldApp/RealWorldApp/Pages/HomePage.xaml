@@ -199,10 +199,10 @@
                                      Spacing="0"
                                      Margin="15,0,15,0">
                             <Label Text="Welcome"
-                                   FontSize="Large"
+                                   FontSize="Medium"
                                    TextColor="White" />
                             <Label x:Name="LblUserName"
-                                   FontSize="Small"
+                                   FontSize="Micro"
                                    TextColor="White" />
                         </StackLayout>
                     </Grid>
