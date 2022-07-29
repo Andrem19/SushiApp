@@ -56,6 +56,7 @@ namespace RealWorldApp.Pages
                 CategoriesCollection.Add(category);
             }
             CvCategories.ItemsSource = CategoriesCollection;
+            CvCategories.SelectedItem = CategoriesCollection[0];
         }
         private async void GetPopularProducts()
         {

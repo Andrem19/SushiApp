@@ -49,7 +49,7 @@
                                                            VerticalOptions="FillAndExpand"
                                                            Source="{Binding imageUrl}"/>
                                                 </Frame>
-                                                <Label TextColor="#B00905"
+                                                <Label TextColor="#B22222"
                                                        HorizontalTextAlignment="Center"
                                                        FontSize="Medium"
                                                        Text="{Binding name}"/>
@@ -85,7 +85,7 @@
                                 <Label TextColor="#000000" 
                                    Text="{Binding Name}"/>
 
-                            <Label TextColor="#B00905" 
+                            <Label TextColor="#B22222" 
                                    Text="{Binding Price, StringFormat='£{0}'}"/>
                             <Button 
                                 Text="Add To Card"
@@ -154,7 +154,7 @@
                                Grid.Row="0"
                                Grid.Column="1"
                                Grid.RowSpan="2"
-                               BackgroundColor="#CE0B06">
+                               BackgroundColor="#B22222">
                             <Label x:Name="LblTotalItems"
                                    VerticalTextAlignment="Center"
                                    HorizontalTextAlignment="Center"
@@ -170,7 +170,7 @@
                 <Image Margin="0,15,0,0"
                        HorizontalOptions="CenterAndExpand"
                        VerticalOptions="CenterAndExpand"
-                       Source="kfc.png"
+                       Source="SushiPointLogoWebSite.png"
                        Aspect="AspectFit"
                        Grid.Row="0"
                        Grid.Column="1"
@@ -185,7 +185,7 @@
                 </Grid.ColumnDefinitions>
                 <StackLayout BackgroundColor="White"
                              x:Name="SlMenu">
-                    <Grid BackgroundColor="#CE0B06"
+                    <Grid BackgroundColor="#B22222"
                           HeightRequest="120">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="4*" />
