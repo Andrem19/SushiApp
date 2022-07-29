@@ -1,13 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RealWorldApp.Pages.ReferalPage">
+             x:Class="RealWorldApp.Pages.OrderListPage">
     <ContentPage.Content>
-        <StackLayout HorizontalOptions="Center">
+        <StackLayout>
             <Grid Margin="20">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="8*" />
@@ -22,42 +19,38 @@
                 </Image>
                 <Label Grid.Column="1"
                        TextColor="#CE0B06"
-                       Text="Referal Links"
+                       Text="Order History"
                        FontSize="Large"
                        FontAttributes="Bold"
-                       HorizontalTextAlignment="Center" 
-                       />
+                       HorizontalTextAlignment="Center" />
             </Grid>
-
-            <StackLayout Margin="20, 0, 20, 0">
-                    <Label BackgroundColor="Aqua" Text="My Referal Code: " />
-                    <Button  x:Name="ButtonCode" Clicked="ButtonCode_Button"/>
-
-                    <Label BackgroundColor="Aqua"  Text="My Referal Link: " />
-                    <Button  x:Name="LinkButton" Clicked="LinkButtin_Button" />
-                </StackLayout>
-
-
-            <ListView x:Name="LvReferals"
-                      Margin="20, 0, 20, 0"
-                      HasUnevenRows="True">
+            <ListView x:Name="LvOrders"
+                      HasUnevenRows="True"
+                      ItemSelected="LvOrders_ItemSelected">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <StackLayout Padding="20">
                                 <StackLayout Orientation="Horizontal">
-                                    <Label HorizontalOptions="StartAndExpand" 
-                                           VerticalOptions="Center"
-                                           TextColor="#CE0B06"
-                                           FontSize="Large"
+                                    <StackLayout>
+                                        <Label Text="Order No."
+                                               TextColor="Gray" />
+                                        <Label TextColor="#CE0B06"
                                                Text="{Binding Id}"/>
+                                    </StackLayout>
+                                    <StackLayout HorizontalOptions="EndAndExpand">
+                                        <Label Text="Made on"
+                                               TextColor="Gray" />
+                                        <Label TextColor="Black"
+                                               Text="{Binding NormalizedData}"/>
+                                    </StackLayout>
                                 </StackLayout>
                                 <StackLayout Orientation="Horizontal">
+                                    <Label Text="Total"
+                                           TextColor="Black" />
                                     <Label  HorizontalOptions="EndAndExpand"
-                                            VerticalOptions="Center"
                                             TextColor="Black"
-                                            FontSize="Large"
-                                            Text="{Binding Code}"/>
+                                            Text="{Binding Total,StringFormat='£{0}'}"/>
                                 </StackLayout>
                             </StackLayout>
                         </ViewCell>

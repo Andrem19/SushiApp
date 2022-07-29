@@ -21,10 +21,12 @@ namespace RealWorldApp.Pages
         public AddressDto _address { get; set; }
         public CustomerBasket _basket { get; set; }
         HubConnection _connection;
+        ICustomNotification notification;
         public PaymentPage(AddressDto address, HubConnection connection)
         {
             InitializeComponent();
             GetBasket();
+            notification = DependencyService.Get<ICustomNotification>();
             _connection = connection;
             _address = address;
         }
@@ -36,32 +38,46 @@ namespace RealWorldApp.Pages
 
         private async void PayCommand(object sender, EventArgs e)
         {
-            await CreateOrder();
+            OrderResponse order = await CreateOrder();
             CardModel card = new CardModel();
             card.Number = CardNumber.Text.Replace(" ", string.Empty);
             card.ExpMonth = Convert.ToInt16(Expiry.Text.Substring(0, 2));
             card.ExpYear = Convert.ToInt16(Expiry.Text.Substring(3, 2));
             card.Cvc = Cvc.Text;
 
-            await Pay(_address, _basket, card);
-            Xamarin.Forms.Application.Current.MainPage = new NavigationPage(new HomePage());
+            string paymentId = await Pay(CardName.Text, _basket, card);
+            
             if (_connection.State != HubConnectionState.Connected)
             {
-                await DisplayAlert("", "connection faild", "ok");
                 await _connection.StartAsync();
             }
-            await _connection.SendAsync("sendMsg", _basket.Point);
+            if (!string.IsNullOrEmpty(paymentId))
+            {
+                await SignalRClient.NewOrderCreated(paymentId);
+                if (order.DeliveryMethod == 1)
+                {
+                    
+                    await _connection.InvokeAsync("authMe", Preferences.Get("Email", string.Empty));
+                    _connection.On<string>("orderIsReady", (message) =>
+                    {
+                        notification.send($"Order {order.Id}", "Your Order Is Ready To Collect");
+                        _connection.StopAsync();
+                    });
+                }
+            }
+            Xamarin.Forms.Application.Current.MainPage = new NavigationPage(new HomePage());
         }
     
-        public async Task CreateOrder()
+        public async Task<OrderResponse> CreateOrder()
         {
             var newOrder = new OrderToCreate();
             newOrder.BasketId = Preferences.Get("basket_id", string.Empty);
             newOrder.ShipToAddress = _address;
-            await ApiService.PlaceOrder(newOrder);
+            var order = await ApiService.PlaceOrder(newOrder);
+            return order;
         }
 
-        public static async Task Pay(AddressDto address, CustomerBasket basket, CardModel card)
+        public static async Task<string> Pay(string CardName, CustomerBasket basket, CardModel card)
         {
             try
             {
@@ -77,7 +93,7 @@ namespace RealWorldApp.Pages
                         Type = "card",
                         BillingDetails = new PaymentIntentPaymentMethodDataBillingDetailsOptions
                         {
-                            Name = address.Name
+                            Name = CardName
                         }
                     },
                     ReturnUrl = string.Format("{0}/webhook", AppSettings.ApiUrlProd) // Change this with your Return URL
@@ -97,6 +113,7 @@ namespace RealWorldApp.Pages
                     if (response)
                     {
                         Preferences.Remove("basket_id");
+                        return basket.PaymentIntentId;
                     }
                 }
             }
@@ -104,6 +121,7 @@ namespace RealWorldApp.Pages
             {
                 await Xamarin.Forms.Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
             }
+            return "";
         }
     }
 }

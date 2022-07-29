@@ -33,7 +33,19 @@ namespace RealWorldApp.Pages
             notification = DependencyService.Get<ICustomNotification>();
             GetPopularProducts();
             GetCategories();
+            OrderListVisible();
             LblUserName.Text = Preferences.Get("userName", string.Empty);
+        }
+
+        public void OrderListVisible()
+        {
+            string role = Preferences.Get("Role", string.Empty);
+
+            OrderListLayout.IsVisible = false;
+            if (role == "Admin" || role == "Moderator")
+            {
+                OrderListLayout.IsVisible = true;
+            }
         }
 
         private async void GetCategories()
@@ -77,37 +89,42 @@ namespace RealWorldApp.Pages
 
         protected async override void OnAppearing()
         {
-            _connection = new HubConnectionBuilder()
-                .WithUrl($"{AppSettings.ApiUrlProd}hub/toastr", options =>
-                {
-                    options.HttpMessageHandlerFactory = (message) =>
-                    {
-                        if (message is HttpClientHandler clientHandler)
-                            // bypass SSL certificate
-                            clientHandler.ServerCertificateCustomValidationCallback +=
-                                                    (sender, certificate, chain, sslPolicyErrors) => { return true; };
-                        return message;
-                    };
-                })
-                .Build();
-
-            await _connection.StartAsync();
-
             
-            if (_connection.State == HubConnectionState.Connected)
+            _connection = new HubConnectionBuilder()
+            .WithUrl($"{AppSettings.ApiUrlProd}hub/toastr", options =>
             {
-                await _connection.InvokeAsync("authMe", Preferences.Get("Email", string.Empty));
-                _connection.On<string>("sendMsgResponse", (message) =>
+                options.HttpMessageHandlerFactory = (message) =>
                 {
-                    notification.send("New Order", message);
-                });
-                notification.send("", "Connected");
-            }
-            else
+                    if (message is HttpClientHandler clientHandler)
+                        // bypass SSL certificate
+                        clientHandler.ServerCertificateCustomValidationCallback +=
+                                                (sender, certificate, chain, sslPolicyErrors) => { return true; };
+                    return message;
+                };
+            })
+            .Build();
+            if (_connection.State != HubConnectionState.Connected)
             {
-                notification.send("", "Disconected");
-            }
+                await _connection.StartAsync();
 
+                var role = Preferences.Get("Role", string.Empty);
+                if (role == "Moderator" || role == "Admin")
+                {
+                    if (_connection.State == HubConnectionState.Connected)
+                    {
+                        await _connection.InvokeAsync("authMe", Preferences.Get("Email", string.Empty));
+                        _connection.On<string>("sendMsgResponse", (message) =>
+                        {
+                            notification.send("New Order", message);
+                        });
+                        notification.send("", "Connected");
+                    }
+                    else
+                    {
+                        notification.send("", "No Connection");
+                    }
+                }
+            }
             base.OnAppearing();
 
             string basket_id = Preferences.Get("basket_id", string.Empty);
@@ -236,6 +253,11 @@ namespace RealWorldApp.Pages
         private async void TapReferals_Tapped(object sender, EventArgs e)
         {
             await Navigation.PushModalAsync(new ReferalPage());
+        }
+
+        private async void TapOrderList_Tapped(object sender, EventArgs e)
+        {
+            await Navigation.PushModalAsync(new OrderListPage());
         }
     }
 }

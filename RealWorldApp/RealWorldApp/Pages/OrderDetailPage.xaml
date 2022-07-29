@@ -5,6 +5,9 @@
     <ContentPage.Content>
         <StackLayout>
             <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="8*" />
@@ -17,13 +20,45 @@
                         <TapGestureRecognizer x:Name="TapBack" Tapped="TapBack_Tapped"/>
                     </Image.GestureRecognizers>
                 </Image>
-                <Label Grid.Column="1"
+                <Label Grid.Row="0" Grid.Column="1"
                        TextColor="#CE0B06"
                        Text="Order Details"
                        FontSize="Large"
                        FontAttributes="Bold"
                        HorizontalTextAlignment="Center" />
             </Grid>
+
+            <StackLayout x:Name="Address_Block">
+                <Label Text="Delivery Method:"
+                                               TextColor="#CE0B06"
+                                               HorizontalOptions="Center" />
+                <Label TextColor="#000000"
+                                               HorizontalOptions="Center"
+                                               x:Name="DeliveryMethodLabel"
+                                               Text=""/>
+                <Label Text="Address:"
+                                               TextColor="#CE0B06"
+                                               HorizontalOptions="Center" />
+                <Label x:Name="Name"
+                                               TextColor="#000000"
+                                               HorizontalOptions="Center" />
+                <Label x:Name="PostCode"
+                                               TextColor="#000000"
+                                               HorizontalOptions="Center" />
+                <Label x:Name="Line1"
+                                               TextColor="#000000"
+                                               HorizontalOptions="Center" />
+                <Label x:Name="Line2"
+                                               TextColor="#000000"
+                                               HorizontalOptions="Center" />
+                <Label x:Name="City"
+                                               TextColor="#000000"
+                                               HorizontalOptions="Center" />
+                <Label x:Name="PhoneNumber"
+                                               TextColor="#000000"
+                                               HorizontalOptions="Center" />
+            </StackLayout>
+            
             <ListView HasUnevenRows="True"
                       x:Name="LvOrderDetail"
                       SelectionMode="None">
@@ -69,6 +104,7 @@
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+
                 <ListView.Footer>
                     <StackLayout Margin="20">
                         <Label HorizontalOptions="End"

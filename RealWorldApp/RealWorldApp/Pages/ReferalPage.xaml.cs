@@ -31,40 +31,7 @@ namespace RealWorldApp.Pages
             GetMyCode();
             GetReferals();
         }
-        protected async override void OnAppearing()
-        {
-            _connection = new HubConnectionBuilder()
-                .WithUrl($"{AppSettings.ApiUrlProd}hub/toastr", options =>
-                {
-                    options.HttpMessageHandlerFactory = (message) =>
-                    {
-                        if (message is HttpClientHandler clientHandler)
-                            // bypass SSL certificate
-                            clientHandler.ServerCertificateCustomValidationCallback +=
-                                                    (sender, certificate, chain, sslPolicyErrors) => { return true; };
-                        return message;
-                    };
-                })
-                .Build();
-
-            await _connection.StartAsync();
-
-            base.OnAppearing();
-        }
-        public void CreateConnection()
-        {
-
-            if (_connection.State == HubConnectionState.Connected)
-            {
-                notification.send("Message", "Connected");
-            }
-
-            _connection.On<string>("ReceiveMessage", (message) =>
-            {
-                notification.send("FromServer", message);
-            }
-            );
-        }
+        
 
         private async void GetReferals()
         {
@@ -100,16 +67,6 @@ namespace RealWorldApp.Pages
             await DisplayAlert("", "Link Copied", "OK");
         }
 
-        private void Send_notif(object sender, EventArgs e)
-        {
-            CreateConnection();
-            //var t = Task.Run(async delegate
-            //{
-            //    await Task.Delay(5000);
-            //    notification.send("New Order", "New Order Created");
-            //});
-            //t.Wait();
-        }
     }
     public interface ICustomNotification 
     {

@@ -3,76 +3,32 @@ using RealWorldApp.Pages;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace RealWorldApp.Services
 {
     public class SignalRClient
     {
-        HubConnection _connection;
-        ICustomNotification notification;
-
-        public SignalRClient()
+        public static async Task NewOrderCreated(string paymentId)
         {
-            notification = DependencyService.Get<ICustomNotification>();
+            string token = Preferences.Get("accessToken", string.Empty);
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            await httpClient.GetAsync(AppSettings.ApiUrlProd + "api/Notification?paymentId=" + paymentId);
+
         }
-        public async Task StartConnection()
+        public static async Task OrderReady(string id)
         {
-            _connection = new HubConnectionBuilder()
-                .WithUrl($"{AppSettings.ApiUrlProd}hub/toastr", options =>
-                {
-                    options.HttpMessageHandlerFactory = (message) =>
-                    {
-                        if (message is HttpClientHandler clientHandler)
-                            // bypass SSL certificate
-                            clientHandler.ServerCertificateCustomValidationCallback +=
-                                                    (sender, certificate, chain, sslPolicyErrors) => { return true; };
-                        return message;
-                    };
-                })
-                .Build();
+            string token = Preferences.Get("accessToken", string.Empty);
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            await httpClient.GetAsync(AppSettings.ApiUrlProd + "api/Notification/orderReady?id=" + id);
 
-            await _connection.StartAsync();
-            if (_connection.State == HubConnectionState.Connected)
-            {
-                notification.send("", "Connected");
-            }
-            else
-            {
-                notification.send("", "Disconected");
-            }
         }
 
-        public async Task Disconnect()
-        {
-            await _connection.StopAsync();
-        }
-
-        public async Task AuthMe(string email)
-        {
-            try
-            {
-                await _connection.InvokeAsync("authMe", email);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-        public async Task SendMessage(string point)
-        {
-            await _connection.SendAsync("sendMsg", point);
-        }
-
-        public void ListenMessage()
-        {
-            _connection.On<string>("sendMsgResponse", (message) =>
-            {
-                notification.send("New Order", message);
-            });
-        }
-        
     }
 }

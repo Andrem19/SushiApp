@@ -48,6 +48,15 @@ namespace RealWorldApp.Services
             Preferences.Set("accessToken", result.Token);
             Preferences.Set("userName", result.DisplayName);
             Preferences.Set("Email", result.Email);
+            if (result.Roles.Contains("Moderator"))
+            {
+                Preferences.Set("Role", "Moderator");
+            }
+            if (result.Roles.Contains("Admin"))
+            {
+                Preferences.Set("Role", "Admin");
+            }
+            
             return true;
         }
         public static async Task<bool> FBLogin(string token, string referal = "0")
@@ -68,6 +77,14 @@ namespace RealWorldApp.Services
             Preferences.Set("accessToken", result.Token);
             Preferences.Set("userName", result.DisplayName);
             Preferences.Set("Email", result.Email);
+            if (result.Roles.Contains("Moderator"))
+            {
+                Preferences.Set("Role", "Moderator");
+            }
+            if (result.Roles.Contains("Admin"))
+            {
+                Preferences.Set("Role", "Admin");
+            }
             return true;
         }
         public static async Task<UserDto> GetUser()
@@ -218,6 +235,13 @@ namespace RealWorldApp.Services
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
             var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/Orders");
+            return JsonConvert.DeserializeObject<List<OrderResponse>>(response);
+        }
+        public static async Task<List<OrderResponse>> GetOrdersByPoint()
+        {
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", Preferences.Get("accessToken", string.Empty));
+            var response = await httpClient.GetStringAsync(AppSettings.ApiUrlProd + "api/Orders/point");
             return JsonConvert.DeserializeObject<List<OrderResponse>>(response);
         }
 
