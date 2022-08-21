@@ -21,6 +21,7 @@ namespace RealWorldApp.Pages
             InitializeComponent();
             OrderDetailCollection = new ObservableCollection<OrderItemDto>();
             GetOrderDetail(orderId);
+            VisibleAddressBlock();
         }
 
         public void VisibleAddressBlock()

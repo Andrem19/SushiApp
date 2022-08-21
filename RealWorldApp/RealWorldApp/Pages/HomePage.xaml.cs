@@ -57,6 +57,7 @@ namespace RealWorldApp.Pages
             }
             CvCategories.ItemsSource = CategoriesCollection;
             CvCategories.SelectedItem = CategoriesCollection[0];
+            
         }
         private async void GetPopularProducts()
         {
@@ -85,6 +86,7 @@ namespace RealWorldApp.Pages
         {
             Preferences.Set("accessToken", string.Empty);
             Preferences.Set("tokenExpirationTime", 0);
+            Preferences.Set("Role", string.Empty);
             Application.Current.MainPage = new NavigationPage(new SignupPage());
         }
 
@@ -194,6 +196,7 @@ namespace RealWorldApp.Pages
 
         private async void CvCategories_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             var currentSelection = e.CurrentSelection.FirstOrDefault() as Category;
             var products = await ApiService.GetProductsByCategory(currentSelection.name);
             ProductsCollection.Clear();

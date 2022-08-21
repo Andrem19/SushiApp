@@ -16,10 +16,13 @@
                 </CollectionView.ItemsLayout>
                 <CollectionView.Header>
                     <StackLayout>
+                        
                         <Label Margin="15,170,15,0"
                                Text="Our Menu"
-                               TextColor="Black"
-                               FontSize="Medium" />
+                               
+                               TextColor="#000000"
+                               FontSize="Large"
+                               FontAttributes="Italic" />
                         <CollectionView  x:Name="CvCategories"
                                          HeightRequest="130"
                                          SelectionMode="Single"
@@ -31,38 +34,46 @@
                             </CollectionView.ItemsLayout>
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <StackLayout Orientation="Horizontal">
+                                    <StackLayout BackgroundColor="White" Orientation="Vertical">
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup Name="CommonStates">
+                                                <VisualState Name="Normal" />
+                                                <VisualState Name="Selected">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor" Value="#cfe9e2" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
                                         <Frame Padding="0"
-                                               BackgroundColor="Transparent"
-                                               Margin="15,0,15,0"
-                                               HasShadow="True">
-                                            <StackLayout Orientation="Vertical"
-                                                         >
-                                                <Frame Padding="0"
                                                        CornerRadius="100"
-                                                       IsClippedToBounds="True"
+                                                       Margin="15,15,15,0"
+                                                       IsClippedToBounds="true"
                                                        HeightRequest="90"
                                                        WidthRequest="90"
-                                                       HorizontalOptions="Center">
-                                                    <Image Aspect="AspectFill"
+                                                       HorizontalOptions="Center" 
+                                                       BackgroundColor="White">
+                                            <Image Aspect="AspectFill"
+                                                   
                                                            HorizontalOptions="FillAndExpand"
                                                            VerticalOptions="FillAndExpand"
                                                            Source="{Binding imageUrl}"/>
-                                                </Frame>
-                                                <Label TextColor="#B22222"
+                                            </Frame>
+                                            <Label TextColor="#B22222"
                                                        HorizontalTextAlignment="Center"
                                                        FontSize="Medium"
+                                                       FontAttributes="Bold"
                                                        Text="{Binding name}"/>
-                                            </StackLayout>
-                                        </Frame>
-                                    </StackLayout>
+                                        </StackLayout>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
                         <Label Margin="15,15,15,0"
-                               Text="Products"
-                               TextColor="Black"
-                               FontSize="Medium" />
+                               Text="Poular Products"
+                               TextColor="#000000"
+                               FontAttributes="Italic"
+                               FontSize="Large" />
                     </StackLayout>
                 </CollectionView.Header>
                 <CollectionView.ItemTemplate>
@@ -82,13 +93,19 @@
                                         NumberOfTapsRequired="1" />
                                 </Image.GestureRecognizers> 
                             </Image>
-                                <Label TextColor="#000000" 
-                                   Text="{Binding Name}"/>
-
                             <Label TextColor="#B22222" 
+                                   Text="{Binding Name}"
+                                   FontAttributes="Bold"
+                                   FontSize="Medium"/>
+
+                            <Label TextColor="#000000" 
                                    Text="{Binding Price, StringFormat='£{0}'}"/>
                             <Button 
                                 Text="Add To Card"
+                                BackgroundColor="#cfe9e2"
+                                FontAttributes="Bold"
+                                CornerRadius="10"
+                                TextColor="#B22222"
                                 Clicked="AddToCard_Button"
                                 BindingContext="{Binding Id}">
                             </Button>
@@ -174,7 +191,7 @@
                        Aspect="AspectFit"
                        Grid.Row="0"
                        Grid.Column="1"
-                       Grid.RowSpan="3" />
+                       Grid.RowSpan="3"/>
             </Grid>
             <Grid x:Name="GridOverlay"
                   IsVisible="False"
@@ -191,7 +208,7 @@
                             <ColumnDefinition Width="4*" />
                             <ColumnDefinition Width="6*" />
                         </Grid.ColumnDefinitions>
-                        <Image Source="kfc.png"
+                        <Image Source="logo.png"
                                Margin="5"
                                VerticalOptions="Center" />
                         <StackLayout Grid.Column="1"
@@ -199,7 +216,7 @@
                                      Spacing="0"
                                      Margin="15,0,15,0">
                             <Label Text="Welcome"
-                                   FontSize="Medium"
+                                   FontSize="Small"
                                    TextColor="White" />
                             <Label x:Name="LblUserName"
                                    FontSize="Micro"
